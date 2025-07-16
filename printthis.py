@@ -9,12 +9,13 @@
 
 import socket
 import serial
+import time
 
 TCP_IP = "192.168.0.83"
 TCP_PORT = 9100
 BUFFER_SIZE = 1024
 
-print("yo Mamas ´ol labelprinter", flush=True) 
+print("Hi! I print stuff...", flush=True) 
 
 zpl = ""
 
@@ -63,7 +64,7 @@ barcode_aktionen = {
 }
 
 
-def read_barcode_from_com(port='COM5', baudrate=9600, timeout=1):
+def read_barcode_from_com(port='/dev/ttyACM0', baudrate=9600, timeout=1):
     try:
         with serial.Serial(port, baudrate, timeout=timeout) as ser:
             print(f"Verbunden mit {port}. Warte auf Barcode-Scan...", flush=True)
@@ -82,6 +83,11 @@ def read_barcode_from_com(port='COM5', baudrate=9600, timeout=1):
                         s.close()
                     else:
                         print(f"Ungültiger oder nicht zugeordneter Barcode: {barcode}", flush=True)
+                        with open("missingBarcodes.txt", "a") as f:
+                            f.write(barcode + '\n')
+                            print("in toto-Liste aufgenommen", flush=True)
+                    time.sleep(1)
+
     except serial.SerialException as e:
         print(f"Fehler beim Zugriff auf {port}: {e}", flush=True)
     except KeyboardInterrupt:
